@@ -29,11 +29,18 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '21'
-      - name: Build APK
-        run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
+- name: Fix Kotlin Duplicate Class Error and Build APK
+  run: |
+    cd android
+    echo "
+    allprojects {
+        configurations.all {
+            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+        }
+    }" >> app/build.gradle
+    chmod +x gradlew
+    ./gradlew assembleDebug
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
